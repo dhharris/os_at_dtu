@@ -1,3 +1,5 @@
 *.o
 shell
 test
+*.pdf
+databar_instructions/
