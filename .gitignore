@@ -5,3 +5,4 @@ test
 *.icloud
 databar_instructions/
 a.out
+*.pages
