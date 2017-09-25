@@ -11,6 +11,8 @@ test_objects := $(addprefix obj/,$(notdir $(test_sources:.c=.o))) $(objects)
 
 CFLAGS := -g
 
+all: $(executable) test
+
 $(executable): main.c $(objects)
 	$(CC) $(LDFLAGS) -o $@ $^
 
