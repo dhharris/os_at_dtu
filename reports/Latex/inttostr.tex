@@ -1,0 +1,31 @@
+\documentclass{article}
+\usepackage[linesnumbered, ruled]{algorithm2e}
+
+\SetKwProg{Fn}{Function}{}{}
+
+\begin{document}
+\setcounter{algocf}{1}% Modify counter of algorithm
+\begin{algorithm}[h] 
+\caption{Converting an Integer to a C String}
+\Fn{inttostr (d)}{
+ stack $\leftarrow$ empty\;
+ \If{d is 0}{
+        return "0"\;
+ }
+ \While{d $>$ 0}{
+   digit $\leftarrow$ d $mod$ 10\;
+   stack $\leftarrow$ digit\;
+   d $\leftarrow$ d $/$ 10\;
+ }
+ str $\leftarrow$ character array allocated on the heap\;
+ i $\leftarrow$ 0\;
+ \While{stack is not empty}{
+   digit $\leftarrow$ pop(stack)\;
+   str[i] $\leftarrow$ digit + '0'\;
+   i $\leftarrow$ i + 1\;
+ }
+ str[i] $\leftarrow$ 0; \tcc{Null terminate string}
+ return str\;
+}
+\end{algorithm}
+\end{document}

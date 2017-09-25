@@ -1,0 +1,15 @@
+\documentclass{article}
+\usepackage[noline, ruled]{algorithm2e}
+
+\SetKwFor{For}{for (}{) $\lbrace$}{$\rbrace$}
+
+
+\begin{document}
+\begin{algorithm}[H] 
+	\For{$csize=cache\_min;\ csize <= cache\_max;\ csize=csize*2$}{
+   		\For{$stride=1;\ stride <= 128;\ stride=stride*2$}{
+       			$access\ the\ array$\;
+   		}
+	}
+\end{algorithm}
+\end{document}
