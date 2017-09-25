@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "minunit.h"
-#include "../src/shell_lib.h"
+#include "../include/shell_lib.h"
 
 
 int tests_run = 0;
@@ -11,6 +11,7 @@ Collection *before_each()
 {
         Collection *col = malloc(sizeof(Collection));
         reset(col);
+        return col;
 }
 
 

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "shell_lib.h"
+#include "../include/shell_lib.h"
 
 
 void clear_list(node_t *head)

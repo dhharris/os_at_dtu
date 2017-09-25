@@ -1,25 +1,29 @@
-target := shell
+executable=shell
 src_dir := ./src
-tests_dir ?= ./tests
+inc_dir := ./include
+test_dir ?= ./tests
 
-sources := $(shell find $(src_dir) -name *.c)
-tests_dir := $(shell find $(tests_dir) -name *.c)
-objects := $(addsuffix .o,$(basename $(sources))) 
-test_objects := $(addsuffix .o,$(basename $(tests_dir))) \
-	$(filter-out $(src_dir)/main.o,$(objects))
-deps := $(objects:.o)
+sources := $(wildcard $(src_dir)/*.c) 
+headers := $(wildcard $(inc_dir)/*.h) 
+test_sources := $(wildcard $(test_dir)/*.c) 
+objects := $(addprefix obj/,$(notdir $(sources:.c=.o)))
+test_objects := $(addprefix obj/,$(notdir $(test_sources:.c=.o))) $(objects)
 
-include := $(shell find $(src_dir) -type d)
-include_flags := $(addprefix -I,$(include))
+CFLAGS := -g
 
-CFLAGS := $(include_flags) -g
-
-$(target): $(objects)
-	$(CC) $(LDFLAGS) $(objects) -o $@
+$(executable): main.c $(objects)
+	$(CC) $(LDFLAGS) -o $@ $^
 
 test: $(test_objects) 
-	$(CC) $(LDFLAGS) $(test_objects) -o $@
+	$(CC) $(CFLAGS) -o $@ $^ 
+
+obj/%.o: $(src_dir)/%.c 
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+obj/%.o: $(test_dir)/%.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
 
 .PHONY: clean
 clean:
-	$(RM) $(target) test $(objects) $(test_objects) $(deps)
+	$(RM) $(executable) test $(objects) $(test_objects) $(deps)
