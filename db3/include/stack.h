@@ -7,5 +7,5 @@ typedef struct {
 void spush(Stack *s, int val);
 int spop(Stack *s);
 int sisempty(Stack *s);
-Stack *sinit();
+void sinit(Stack *s, int size);
 void sdestroy(Stack *s);
