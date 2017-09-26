@@ -72,19 +72,3 @@ void eval_c(Collection *col)
         eval_b(col);
 }
 
-
-int parse_character(Collection *col, char c)
-{
-        switch (c) {
-                case 'a': eval_a(col);
-                          break;
-                case 'b': eval_b(col);
-                          break;
-                case 'c': eval_c(col);
-                          break;
-                default:
-                          print_list(col->head);
-                          return 1;
-        }
-        return 0;
-}

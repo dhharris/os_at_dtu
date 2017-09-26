@@ -9,14 +9,14 @@ test_sources := $(wildcard $(test_dir)/*.c)
 objects := $(addprefix obj/,$(notdir $(sources:.c=.o)))
 test_objects := $(addprefix obj/,$(notdir $(test_sources:.c=.o))) $(objects)
 
-CFLAGS := -g
+CFLAGS := -g -Wall -Werror
 
 all: $(executable) test
 
 $(executable): main.c $(objects)
-	$(CC) $(LDFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^
 
-test: $(test_objects) 
+test: test_main.c $(test_objects) 
 	$(CC) $(CFLAGS) -o $@ $^ 
 
 obj/%.o: $(src_dir)/%.c 
@@ -28,4 +28,4 @@ obj/%.o: $(test_dir)/%.c
 
 .PHONY: clean
 clean:
-	$(RM) $(executable) test $(objects) $(test_objects) $(deps)
+	$(RM) -rf $(executable) test $(objects) $(test_objects) $(deps) *.dSYM

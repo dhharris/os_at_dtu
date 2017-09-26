@@ -1,7 +1,6 @@
-#include <stdio.h>
 #include <stdlib.h>
-#include "minunit.h"
 #include "../include/shell_lib.h"
+#include "../include/tests.h"
 
 
 int tests_run = 0;
@@ -22,7 +21,7 @@ void after_each(Collection *col)
 }
 
 
-static char *test_reset_should_set_counter_to_zero()
+char *test_reset_should_set_counter_to_zero()
 {
         Collection *col = before_each();
         mu_assert("error, counter != 0", col->counter == 0);
@@ -31,7 +30,7 @@ static char *test_reset_should_set_counter_to_zero()
 }
 
 
-static char *test_eval_b_should_increase_counter()
+char *test_eval_b_should_increase_counter()
 {
         Collection *col = before_each();
         eval_b(col);
@@ -41,7 +40,7 @@ static char *test_eval_b_should_increase_counter()
 }
 
 
-static char *test_eval_a_should_increment_counter()
+char *test_eval_a_should_increment_counter()
 {
         Collection *col = before_each();
         eval_a(col);
@@ -51,7 +50,7 @@ static char *test_eval_a_should_increment_counter()
 }
 
 
-static char *test_eval_a_should_add_to_linked_list()
+char *test_eval_a_should_add_to_linked_list()
 {
         Collection *col = before_each();
         eval_a(col);
@@ -61,7 +60,7 @@ static char *test_eval_a_should_add_to_linked_list()
 }
 
 
-static char *test_eval_c_with_small_list_should_remove_tail_node()
+char *test_eval_c_with_small_list_should_remove_tail_node()
 {
         Collection *col = before_each();
         eval_a(col);
@@ -72,7 +71,7 @@ static char *test_eval_c_with_small_list_should_remove_tail_node()
 }
 
 
-static char *test_eval_c_with_large_list_should_remove_tail_node()
+char *test_eval_c_with_large_list_should_remove_tail_node()
 {
         Collection *col = before_each();
         int i;
@@ -86,36 +85,11 @@ static char *test_eval_c_with_large_list_should_remove_tail_node()
 }
 
 
-static char *test_eval_c_should_increment_counter()
+char *test_eval_c_should_increment_counter()
 {
         Collection *col = before_each();
         eval_c(col);
         mu_assert("error, col->counter != 1", col->counter == 1);
         after_each(col);
         return 0;
-}
-
-
-static char *all_tests()
-{
-        mu_run_test(test_eval_b_should_increase_counter);
-        mu_run_test(test_reset_should_set_counter_to_zero);
-        mu_run_test(test_eval_a_should_add_to_linked_list);
-        mu_run_test(test_eval_a_should_increment_counter);
-        mu_run_test(test_eval_c_should_increment_counter);
-        mu_run_test(test_eval_c_with_small_list_should_remove_tail_node);
-        mu_run_test(test_eval_c_with_large_list_should_remove_tail_node);
-        return 0;
-}
-
-
-int main(int argc, char **argv)
-{
-        char *result = all_tests();
-        if (result)
-                printf("%s\n", result);
-        else
-                printf("ALL TESTS PASSED\n");
-        printf("Tests ran: %d\n", tests_run);
-        return result != 0;
 }
