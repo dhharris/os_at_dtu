@@ -1,6 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "../include/stack.h"
+#include "../include/io.h"
+#include "../include/mem.h"
 
 void sinit(Stack *s, int size)
 {
@@ -12,7 +12,7 @@ void sinit(Stack *s, int size)
 void sdestroy(Stack *s)
 {
         free(s->contents);
-        s->contents = NULL;
+        s->contents = 0;
         s->size = 0;
         s->top = -1; // Empty
 }
@@ -49,9 +49,8 @@ void spush(Stack *s, int element)
 int spop(Stack *s)
 {
         if (sisempty(s)) {
-                fprintf(stderr, "Error: cannot pop from empty stack");
-                sdestroy(s);
-                exit(1);
+                write(STDERR_FILENO, "Err: cannot pop from empty stack\n", 34);
+                return s->top;
         }
         return s->contents[s->top--];
 }

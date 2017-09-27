@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include "../include/io.h"
+#include "../include/mem.h"
 #include "../include/shell_lib.h"
 
 
@@ -15,18 +15,18 @@ void clear_list(node_t *head)
 void print_list(node_t *head)
 {
         while (head) {
-                printf("%d", head->value);
+                //printf("%d", head->value); // TODO: Replace printf
                 if (head->next)
-                        putchar(',');
+                        write_char(STDOUT_FILENO, ',');
                 head = head->next;
         }
-        putchar('\n');
+        write_char(STDOUT_FILENO, '\n');
 }
 
 
 void reset(Collection *col)
 {
-        col->head = col->tail = NULL;
+        col->head = col->tail = 0;
         col->counter = 0;
 }
 
@@ -36,13 +36,13 @@ void eval_a(Collection *col)
         if (!col->head) {
                 col->head = malloc(sizeof(node_t));
                 col->head->value = col->counter;
-                col->head->next = NULL;
+                col->head->next = 0;
                 col->tail = col->head;
         } else {
                 col->tail->next = malloc(sizeof(node_t));
                 col->tail = col->tail->next;
                 col->tail->value = col->counter;
-                col->tail->next = NULL;
+                col->tail->next = 0;
         }
         eval_b(col);
 }
@@ -60,14 +60,14 @@ void eval_c(Collection *col)
         if (p == col->tail) {
                 // One or no nodes
                 free(col->head);
-                col->head = col->tail = NULL;
+                col->head = col->tail = 0;
         } else {
                 while (p->next != col->tail)
                         p = p->next;
                 // Now p points to node before tail
                 free(col->tail);
                 col->tail = p;
-                col->tail->next = NULL;
+                col->tail->next = 0;
         }
         eval_b(col);
 }

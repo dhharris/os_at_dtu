@@ -15,9 +15,17 @@
  *  free to do so and add the definitions to this file.  It may
  *  be beneficial to add a helper to print out integers for example
  *  */
-int syscall_read(char *dest, int len);
-int write_char(char c);
 
-int syscall_write(char *dest, int len);
+#define STDIN_FILENO 0
+#define STDOUT_FILENO 1
+#define STDERR_FILENO 2
+
+
+int read(int fildes, void *buf, unsigned int nbyte);
+int write(int filedes, const void *buf, unsigned int nbyte);
+
+int write_char(int filedes, char c);
+int write_int(int filedes, int n);
+
 
 #endif /* IO_H_ */

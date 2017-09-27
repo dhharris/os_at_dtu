@@ -16,4 +16,6 @@ char *test_spush_should_add_to_stack();
 char *test_spush_with_full_stack_should_double_size();
 char *test_spop_should_return_top_element();
 char *test_spop_should_remove_top_element();
-char *test_spop_with_empty_stack_should_exit_with_error();
+
+/* String tests */
+char *test_strlen_should_return_correct_length();

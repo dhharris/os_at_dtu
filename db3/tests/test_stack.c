@@ -80,28 +80,3 @@ char *test_spop_should_remove_top_element()
         stack_after_each(s);
         return 0;
 }
-
-char *test_spop_with_empty_stack_should_exit_with_error()
-{
-        int status;
-        int pid = fork();
-        if (pid == 0) {
-                int fd = open("/dev/null", O_WRONLY);
-                dup2(fd, STDERR_FILENO);
-                Stack s;
-                sinit(&s, 10);
-                spush(&s, 1);
-                spop(&s);
-                spop(&s);
-        } else if (pid < 0) {
-                perror("Fork failed\n");
-                exit(1);
-        } else {
-                wait(&status);
-                if (WIFEXITED(status)) {
-                        int returned = WEXITSTATUS(status);
-                        mu_assert("Error, returned != 1", returned == 1);
-                }
-        }
-        return 0;
-}
