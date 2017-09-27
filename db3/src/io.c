@@ -67,7 +67,7 @@ int write_int(int filedes, int d)
         if (d == 0)
                 return write_char(filedes, '0');
 
-        char str[11] = {0}; // Largest integer value is usually 10 digits long
+        char str[11]; // Largest integer value is usually 10 digits long
         Stack s;
         sinit(&s, 10);
 
