@@ -8,7 +8,7 @@ int write_int(int filedes, int d);
 char *test_write_int_should_write_correct_bytes()
 {
         int fds[2];
-        char buf[2];
+        char buf[2] = {0};
         pipe(fds);
 
         // Write to the pipe
@@ -26,7 +26,7 @@ char *test_write_int_should_write_correct_bytes()
 char *test_write_int_with_many_digits_should_write_correct_bytes()
 {
         int fds[2];
-        char buf[4];
+        char buf[4] = {0};
         pipe(fds);
 
         // Write to the pipe
