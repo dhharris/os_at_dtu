@@ -23,6 +23,11 @@ static char *all_tests()
 
         mu_run_test(test_strlen_should_return_correct_length);
 
+        mu_run_test(
+                test_write_int_with_many_digits_should_write_correct_bytes
+        );
+        mu_run_test(test_write_int_should_write_correct_bytes);
+
         return 0;
 }
 

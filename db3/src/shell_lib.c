@@ -15,7 +15,7 @@ void clear_list(node_t *head)
 void print_list(node_t *head)
 {
         while (head) {
-                //printf("%d", head->value); // TODO: Replace printf
+                write_int(STDOUT_FILENO, head->value);
                 if (head->next)
                         write_char(STDOUT_FILENO, ',');
                 head = head->next;

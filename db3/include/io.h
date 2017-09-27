@@ -25,7 +25,7 @@ int read(int fildes, void *buf, unsigned int nbyte);
 int write(int filedes, const void *buf, unsigned int nbyte);
 
 int write_char(int filedes, char c);
-int write_int(int filedes, int n);
+int write_int(int filedes, int d);
 
 
 #endif /* IO_H_ */

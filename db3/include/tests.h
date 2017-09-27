@@ -19,3 +19,7 @@ char *test_spop_should_remove_top_element();
 
 /* String tests */
 char *test_strlen_should_return_correct_length();
+
+/* io tests */
+char *test_write_int_should_write_correct_bytes();
+char *test_write_int_with_many_digits_should_write_correct_bytes();
