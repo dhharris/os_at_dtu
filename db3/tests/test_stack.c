@@ -89,7 +89,9 @@ char *test_spop_with_empty_stack_should_exit_with_error()
                 int fd = open("/dev/null", O_WRONLY);
                 dup2(fd, STDERR_FILENO);
                 Stack s;
-                sinit(&s, 0);
+                sinit(&s, 10);
+                spush(&s, 1);
+                spop(&s);
                 spop(&s);
         } else if (pid < 0) {
                 perror("Fork failed\n");

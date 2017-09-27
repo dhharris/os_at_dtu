@@ -50,6 +50,7 @@ int spop(Stack *s)
 {
         if (sisempty(s)) {
                 fprintf(stderr, "Error: cannot pop from empty stack");
+                sdestroy(s);
                 exit(1);
         }
         return s->contents[s->top--];
