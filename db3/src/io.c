@@ -54,5 +54,5 @@ int write(int filedes, const void *buf, unsigned int nbyte) {
 
 // Helper function to print out a single char
 int write_char(int filedes, char c) {
-        return (write(filedes, &c, 1) == 1);
+        return write(filedes, &c, 1);
 }
