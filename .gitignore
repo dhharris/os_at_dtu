@@ -6,3 +6,5 @@ test
 databar_instructions/
 a.out
 *.dSYM
+*.log
+*.gz
