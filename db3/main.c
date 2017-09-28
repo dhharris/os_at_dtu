@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "include/shell_lib.h"
 
 
