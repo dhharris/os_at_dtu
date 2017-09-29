@@ -7,17 +7,13 @@
 \begin{algorithm}[h] 
 \caption{Getting and Executing Commands}
 collection $\leftarrow$ initialize to empty Collection\;
-status $\leftarrow$ false\;
-line $\leftarrow$ NULL\;
+running $\leftarrow$ true\;
 
-\While{getline returns value $>$ 0}{
-  remove newline character from $line$\;
-  \ForEach{c in line}{
+\While{running is true $\land$ read character is not EOF}{
     status $\leftarrow$ parse\_character($Collection, c$)\;
     \If{status is true}{
       $break$\;
     }
-  }
 }
 \end{algorithm}
 \end{document}
