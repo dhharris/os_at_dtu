@@ -1,6 +1,12 @@
 #include "include/shell_lib.h"
+#include "include/io.h"
+#include "include/mem.h"
 
 
+/**
+ * Execute the command given by c
+ * Returns whether the program should keep running
+ */
 int parse_character(Collection *col, char c)
 {
         switch (c) {
@@ -12,33 +18,23 @@ int parse_character(Collection *col, char c)
                           break;
                 default:
                           print_list(col->head);
-                          return 1;
+                          return 0;
         }
-        return 0;
+        return 1;
 }
 
 
 int main()
 {
-        char *line = NULL;
-        size_t linecap = 0;
-        ssize_t linelen;
-        Collection *col = malloc(sizeof(Collection));
+        Collection col;
         reset(col);
 
-        while ((linelen = getline(&line, &linecap, stdin)) > 0) {
-                line[linelen - 1] = 0; // Remove newline character
-                char *p = line;
-                int status = 0;
+        int running = 1;
+        char c;
 
-                while (*p && !status)
-                        status = parse_character(col, *p++);
-                if (status)
-                        break;
-        }
+        while (running && (c = getchar())!= EOF)
+                running = parse_character(&col, c);
 
         clear_list(col->head);
-        free(col);
-        free(line);
         return 0;
 }

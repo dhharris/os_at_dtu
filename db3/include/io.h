@@ -20,6 +20,8 @@
 #define STDOUT_FILENO 1
 #define STDERR_FILENO 2
 
+#define EOF -1
+
 
 int read(int fildes, void *buf, unsigned int nbyte);
 int write(int filedes, const void *buf, unsigned int nbyte);

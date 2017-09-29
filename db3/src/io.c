@@ -84,3 +84,11 @@ int write_int(int filedes, int d)
 
         return write(filedes, str, i + 1);
 }
+
+// Read a single character from stdin
+char getchar()
+{
+        char buf[1];
+        read(STDIN_FILENO, buf, 1);
+        return buf[0];
+}
