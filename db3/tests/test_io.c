@@ -40,3 +40,21 @@ char *test_write_int_with_many_digits_should_write_correct_bytes()
         mu_assert("Error, strcmp(buf, \"100\") != 0", strcmp(buf, "100") == 0);
         return 0;
 }
+
+char *test_write_int_with_negative_number_should_write_correct_bytes()
+{
+        int fds[2];
+        char buf[3] = {0};
+        pipe(fds);
+
+        // Write to the pipe
+        write_int(fds[1], -1);
+        close(fds[1]);
+
+        // Read from the pipe into buf
+        read(fds[0], buf, 3);
+        close(fds[0]);
+
+        mu_assert("Error, strcmp(buf, \"-1\") != 0", strcmp(buf, "-1") == 0);
+        return 0;
+}

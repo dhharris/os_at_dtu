@@ -23,3 +23,4 @@ char *test_strlen_should_return_correct_length();
 /* io tests */
 char *test_write_int_should_write_correct_bytes();
 char *test_write_int_with_many_digits_should_write_correct_bytes();
+char *test_write_int_with_negative_number_should_write_correct_bytes();

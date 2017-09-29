@@ -67,9 +67,14 @@ int write_int(int filedes, int d)
         if (d == 0)
                 return write_char(filedes, '0');
 
-        char str[11]; // Largest integer value is usually 10 digits long
+        char str[12]; // Includes null byte and sign if needed
+        int sign;
         Stack s;
         sinit(&s, 10);
+
+        /* Record sign and make d positive */
+        if ((sign = d) < 0)
+                d = -d;
 
         while (d > 0) {
                 spush(&s, d % 10);
@@ -77,18 +82,30 @@ int write_int(int filedes, int d)
         }
 
         int i = 0;
+        if (sign < 0)
+                str[i++] = '-';
         while (!sisempty(&s))
                 str[i++] = spop(&s) + '0';
-        str[i] = 0; // Make sure str is null terminated
+        str[i] = '\0'; // Make sure str is null terminated
         sdestroy(&s);
 
         return write(filedes, str, i + 1);
 }
 
 // Read a single character from stdin
-char getchar()
+int getchar()
 {
         char buf[1];
         read(STDIN_FILENO, buf, 1);
         return buf[0];
+}
+
+// Write a single character to stdout
+// Returns the character written as a char cast to int or EOF on error
+int putchar(int c)
+{
+        int result = write_char(STDIN_FILENO, c);
+        if (!result)
+                return EOF;
+        return c;
 }

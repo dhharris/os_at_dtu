@@ -27,6 +27,9 @@ static char *all_tests()
                 test_write_int_with_many_digits_should_write_correct_bytes
         );
         mu_run_test(test_write_int_should_write_correct_bytes);
+        mu_run_test(
+                test_write_int_with_negative_number_should_write_correct_bytes
+        );
 
         return 0;
 }
