@@ -27,14 +27,14 @@ int parse_character(Collection *col, char c)
 int main()
 {
         Collection col;
-        reset(col);
+        reset(&col);
 
         int running = 1;
         char c;
 
-        while (running && (c = getchar())!= EOF)
+        while (running && (c = getchar()) != EOF)
                 running = parse_character(&col, c);
 
-        clear_list(col->head);
+        clear_list(col.head);
         return 0;
 }
