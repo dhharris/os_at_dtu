@@ -96,8 +96,9 @@ int write_int(int filedes, int d)
 int getchar()
 {
         char buf[1];
-        read(STDIN_FILENO, buf, 1);
-        return buf[0];
+        if (read(STDIN_FILENO, buf, 1) == 1)
+                return buf[0];
+        return EOF;
 }
 
 // Write a single character to stdout
