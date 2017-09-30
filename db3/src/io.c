@@ -105,7 +105,7 @@ int getchar()
 // Returns the character written as a char cast to int or EOF on error
 int putchar(int c)
 {
-        int result = write_char(STDIN_FILENO, c);
+        int result = write_char(STDOUT_FILENO, c);
         if (!result)
                 return EOF;
         return c;
