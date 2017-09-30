@@ -17,10 +17,10 @@ void print_list(node_t *head)
         while (head) {
                 write_int(STDOUT_FILENO, head->value);
                 if (head->next)
-                        write_char(STDOUT_FILENO, ',');
+                        putchar(',');
                 head = head->next;
         }
-        write_char(STDOUT_FILENO, '\n');
+        putchar('\n');
 }
 
 
