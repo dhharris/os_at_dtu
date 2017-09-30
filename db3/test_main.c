@@ -30,6 +30,9 @@ static char *all_tests()
         mu_run_test(
                 test_write_int_with_negative_number_should_write_correct_bytes
         );
+        mu_run_test(test_getchar_should_read_correct_character);
+        mu_run_test(test_getchar_should_return_EOF_on_error);
+        mu_run_test(test_putchar_should_write_correct_character);
 
         return 0;
 }

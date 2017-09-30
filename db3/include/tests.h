@@ -24,3 +24,6 @@ char *test_strlen_should_return_correct_length();
 char *test_write_int_should_write_correct_bytes();
 char *test_write_int_with_many_digits_should_write_correct_bytes();
 char *test_write_int_with_negative_number_should_write_correct_bytes();
+char *test_getchar_should_read_correct_character();
+char *test_getchar_should_return_EOF_on_error();
+char *test_putchar_should_write_correct_character();
