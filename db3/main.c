@@ -32,7 +32,7 @@ int main()
         int running = 1;
         char c;
 
-        while (running && (c = getchar())!= EOF)
+        while (running && (c = getchar()) != EOF)
                 running = parse_character(&col, c);
 
         clear_list(col.head);
