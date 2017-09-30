@@ -12,13 +12,26 @@
  \If{d is 0}{
         return "0"\;
  }
+ \bigskip
+ \tcc{Record sign and make sure d is positive}
+ sign $\leftarrow$ d\;
+ \If{sign $<$ 0}{
+ 	d $\leftarrow$ -d\;
+ }
+ \bigskip
+ \tcc{Extract each digit from d and place it on the stack}
  \While{d $>$ 0}{
    digit $\leftarrow$ d $mod$ 10\;
    stack $\leftarrow$ digit\;
    d $\leftarrow$ d $/$ 10\;
  }
- str $\leftarrow$ character array allocated on the heap\;
+ \bigskip
+ str $\leftarrow$ empty character array\;
  i $\leftarrow$ 0\;
+ \If{sign $<$ 0}{
+ 	str[i] $\leftarrow$ '-'; \tcc{Add leading negative sign}
+	i $\leftarrow$ i + 1\;
+ }
  \While{stack is not empty}{
    digit $\leftarrow$ pop(stack)\;
    str[i] $\leftarrow$ digit + '0'\;
