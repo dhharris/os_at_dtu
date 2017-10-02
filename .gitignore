@@ -8,3 +8,4 @@ a.out
 *.dSYM
 *.log
 *.gz
+*.d
