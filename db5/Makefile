@@ -52,7 +52,7 @@ objects/kernel/kernel: objects/kernel/entry.o $(KERNEL_OBJECTS) src/kernel/kerne
 	$(CC) $(CFLAGS) -static -nostdlib -Wl,-zmax-page-size=4096 -Tsrc/kernel/kernel_link.ld -o objects/kernel/kernel objects/kernel/entry.o $(KERNEL_OBJECTS)
 
 objects/kernel/entry.o: src/kernel/entry.s | objects/kernel
-	$(AS) --gstabs --32 -o objects/kernel/entry.o src/kernel/entry.s
+	$(AS) -m32 -o objects/kernel/entry.o src/kernel/entry.s
 
 objects/kernel/%.d: src/kernel/%.c | objects/kernel
 	@set -e; rm -f $@; \
