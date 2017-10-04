@@ -32,11 +32,19 @@ static screen* const screen_pointer = (screen*) 0xB8000;
 int posx = 0;
 int posy = 0;
 
+
+// Helper function to determine whether a character can be printed
+int isprint(int c)
+{
+        return c >= 32 && c <= 126;
+}
+
 // Helper function to print a char to the VGA screen
 // Prints the character and then moves the screen pointer
 void kprintc(char c)
 {
-        screen_pointer->positions[posy][posx++].character = c;
+        if (isprint(c))
+                screen_pointer->positions[posy][posx++].character = c;
 
         // Move to next row if we are at the end or newline character is drawn
         if (posx >= MAX_COLS || c == '\n') {
