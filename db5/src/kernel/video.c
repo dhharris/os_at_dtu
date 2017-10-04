@@ -50,7 +50,9 @@ void kprintc(char c)
  */
 void kprints(const char *string)
 {
-        /* Implement me! */
+        int i = 0;
+        while (string[i])
+                kprintc(string[i++]);
 }
 
 /**
