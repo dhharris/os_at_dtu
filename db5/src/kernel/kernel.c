@@ -98,8 +98,9 @@ void kernel_init(register uint32_t* const multiboot_information
  }
 
  kprints("The kernel has booted!\n");
+ kprints("The system is going down for system halt NOW!");
 
- /* Halt as we cannot do anything more right now. */ 
+ /* Halt as we cannot do anything more right now. */
  halt_the_machine();
 
  while(1) ;
