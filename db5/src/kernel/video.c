@@ -28,18 +28,21 @@ typedef struct {
 /*! points to the VGA screen. */
 static screen* const screen_pointer = (screen*) 0xB8000;
 
-/* Index of the current screen position */
-int index = 0;
+/* Coordinates of the current screen position */
+int posx = 0;
+int posy = 0;
 
 // Helper function to print a char to the VGA screen
 // Prints the character and then moves the screen pointer
 void kprintc(char c)
 {
-        (*screen_pointer)[index++].character = c;
-        if (c == '\n') // Move to next row
-                // We know we are at the start of a row if index % ncols == 0
-                while (index % MAX_COLS)
-                        index++;
+        screen_pointer->positions[posy][posx++].character = c;
+
+        // Move to next row if we are at the end or newline character is drawn
+        if (posx >= MAX_COLS || c == '\n') {
+                posx = 0;
+                posy++;
+        }
 }
 
 /**
