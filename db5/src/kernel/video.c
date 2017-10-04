@@ -28,10 +28,24 @@ typedef struct {
 /*! points to the VGA screen. */
 static screen* const screen_pointer = (screen*) 0xB8000;
 
+/* Index of the current screen position */
+int index = 0;
+
+// Helper function to print a char to the VGA screen
+// Prints the character and then moves the screen pointer
+void kprintc(char c)
+{
+        (*screen_pointer)[index++].character = c;
+        if (c == '\n') // Move to next row
+                // We know we are at the start of a row if index % ncols == 0
+                while (index % MAX_COLS)
+                        index++;
+}
+
 /**
  * Print a C string to the VGA screen
  */
-void kprints(const char* string)
+void kprints(const char *string)
 {
         /* Implement me! */
 }
