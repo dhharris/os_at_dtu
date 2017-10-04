@@ -9,3 +9,6 @@ a.out
 *.log
 *.gz
 *.d
+*.iso
+kernel
+*.cfg
