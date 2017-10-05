@@ -102,9 +102,15 @@ void kernel_init(register uint32_t* const multiboot_information
  kprints("\n");
  kprinthex(0xBADF00D);
  kprints("\n");
- kprints("The system is going down for system halt NOW!");
+
+ int i;
+ for (i = 0; i < 100; ++i) {
+         kprinthex(i);
+         kprints("\n");
+ }
 
  /* Halt as we cannot do anything more right now. */
+ kprints("The system is going down for system halt NOW!");
  halt_the_machine();
 
  while(1) ;
