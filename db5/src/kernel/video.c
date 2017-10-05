@@ -69,6 +69,17 @@ int isprint(int c)
         return c >= 32 && c <= 126;
 }
 
+
+// Helper function to move all characters on the screen up one row
+void scroll_screen()
+{
+        int x, y;
+        for (y = 0; y < MAX_ROWS; ++y)
+                for (x = 0; x < MAX_COLS; ++x)
+                         screen_pointer->positions[y][x].character =
+                                 screen_pointer->positions[y + 1][x].character;
+}
+
 // Helper function to print a char to the VGA screen
 // Prints the character and then moves the screen pointer
 void kprintc(char c)
@@ -80,6 +91,13 @@ void kprintc(char c)
         if (posx >= MAX_COLS || c == '\n') {
                 posx = 0;
                 posy++;
+        }
+        // Implement terminal scrolling, i.e. in the case that the screen
+        // fills up, move all rows up one row and discard the upper most,
+        // leaving a blank row at the bottom ready to be filled up with chars
+        if (posy >= MAX_ROWS) {
+                scroll_screen();
+                posy = MAX_ROWS - 1;
         }
 }
 
