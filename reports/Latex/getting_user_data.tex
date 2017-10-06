@@ -10,10 +10,7 @@ collection $\leftarrow$ initialize to empty Collection\;
 running $\leftarrow$ true\;
 
 \While{running is true $\land$ read character is not EOF}{
-    status $\leftarrow$ parse\_character($Collection, c$)\;
-    \If{status is true}{
-      $break$\;
-    }
+    running $\leftarrow$ parse\_character($Collection, c$)\;
 }
 \end{algorithm}
 \end{document}
