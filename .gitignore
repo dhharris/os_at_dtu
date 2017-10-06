@@ -12,3 +12,4 @@ a.out
 *.iso
 kernel
 *.cfg
+.DS*
