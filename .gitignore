@@ -12,3 +12,5 @@ a.out
 *.iso
 *.cfg
 .DS*
+db5/objects/kernel/*
+db5/bochs/iso/kernel
