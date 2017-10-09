@@ -10,6 +10,5 @@ a.out
 *.gz
 *.d
 *.iso
-kernel
 *.cfg
 .DS*
