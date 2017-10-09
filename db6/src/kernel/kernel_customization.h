@@ -31,13 +31,17 @@ struct thread
  /* Add more members here if you need. */
 };
 
+
+/*! Process states */
+#define PROCESS_RUNNING 0
+#define PROCESS_READY 1
+#define PROCESS_BLOCKED 2
+
 /*! Defines a process. */
 struct process
 {
- int number_of_threads;
- /*!< the number of threads this process owns. */
-
- /* Add more members here if you need. */
+ int number_of_threads; /*!< the number of threads this process owns. */
+ int state; /*!< Current state of the process */
 };
 
 /* You can add more declarations here if you need. */
