@@ -117,7 +117,6 @@ void kprints(const char *string)
  */
 void kprinthex(const register uint32_t value)
 {
-        /* Implement me! */
         char buf[9]; // enough for 32 bit integer
         uitohex(value, buf);
         kprints("0x");
