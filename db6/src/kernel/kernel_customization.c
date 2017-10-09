@@ -34,6 +34,7 @@ void handle_system_call(void)
                         }
                 case SYSCALL_PRINTS:
                         {
+                                kprints((char *) current_thread->edi);
                                 current_thread->eax = 0x00010000;
                                 break;
                         }
