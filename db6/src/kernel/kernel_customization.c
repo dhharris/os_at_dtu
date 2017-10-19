@@ -14,11 +14,21 @@
 
 #include "kernel.h"
 
+// Assigns thread t to process p
+void assign_to_process(struct thread *t, struct process *p)
+{
+        t->process = p;
+        p->state = PROCESS_READY; // p gets promoted to READY state
+        p->number_of_threads++;
+}
+
+
 void kernel_late_init(void)
 {
         /* Set up the first thread. For now we do not set up a process. That is
            for you to do later. */
         threads[0].eip = executable_table[0];
+        assign_to_process(&threads[0], &processes[0]);
 
         /* Go to user space. */
         go_to_user_space();
