@@ -23,7 +23,8 @@ struct thread {
            order. */
 
         struct process* process;
-        /*!< owning process of this thread. */
+        /*!< owning process of this thread. Will be 0 if the thread is 
+         * unowned, and therefore available for use by a new process. */
         struct thread*  next;
         /*!< can be used to implement linked lists of threads. */
 
