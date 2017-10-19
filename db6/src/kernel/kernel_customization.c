@@ -14,12 +14,37 @@
 
 #include "kernel.h"
 
-// Assigns thread t to process p
-void assign_to_process(struct thread *t, struct process *p)
+// Assigns thread t to the next available process
+// Returns ALL_OK on success, ERROR on failure
+int assign_to_process(struct thread *t)
 {
+        int i;
+        struct process *p = 0;
+
+        for (i = 0; i < MAX_PROCESSES; ++i)
+                if (processes[i].state == PROCESS_NEW) {
+                        p = &processes[i];
+                        break;
+                }
+        if (!p)
+                return ERROR; // Unable to find a new process
+
         t->process = p;
         p->state = PROCESS_READY; // p gets promoted to READY state
         p->number_of_threads++;
+        return ALL_OK;
+}
+
+
+// Finds an available thread that isn't being used
+// Returns 0 if not found
+struct thread *get_new_thread()
+{
+        int i;
+        for (i = 0; i < MAX_THREADS; ++i)
+                if (!threads[i].process)
+                        return &threads[i];
+        return 0;
 }
 
 
@@ -28,7 +53,7 @@ void kernel_late_init(void)
         /* Set up the first thread. For now we do not set up a process. That is
            for you to do later. */
         threads[0].eip = executable_table[0];
-        assign_to_process(&threads[0], &processes[0]);
+        assign_to_process(&threads[0]);
 
         /* Go to user space. */
         go_to_user_space();
@@ -45,7 +70,22 @@ void handle_system_call(void)
                 case SYSCALL_PRINTS:
                         {
                                 kprints((char *) current_thread->edi);
-                                current_thread->eax = 0x00010000;
+                                current_thread->eax = ALL_OK;
+                                break;
+                        }
+
+                case SYSCALL_CREATEPROCESS:
+                        {
+                                /* Find a new thread */
+                                struct thread *t = get_new_thread();
+
+                                if (t) {
+                                        t->eip = current_thread->edi;
+                                        current_thread->eax =
+                                                assign_to_process(t);
+                                } else {
+                                        current_thread->eax = ERROR;
+                                }
                                 break;
                         }
 
