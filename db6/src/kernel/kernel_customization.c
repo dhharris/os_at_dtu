@@ -14,6 +14,21 @@
 
 #include "kernel.h"
 
+
+// Terminate thread t. If t is an unused thread this syscall is a NOP
+void terminate(struct thread *t)
+{
+        struct process *p = t->process;
+        if (p) {
+                /* Terminate process if it has no more threads */
+                if (!--p->number_of_threads) {
+                        p->state = PROCESS_NEW;
+                        p->number_of_threads = 0;
+                }
+                t->process = 0;
+        }
+}
+
 // Assigns thread t to the next available process
 // Returns ALL_OK on success, ERROR on failure
 int assign_to_process(struct thread *t)
@@ -88,7 +103,11 @@ void handle_system_call(void)
                                 }
                                 break;
                         }
-
+                case SYSCALL_TERMINATE:
+                        {
+                                terminate(current_thread);
+                                break;
+                        }
                 default:
                         {
                                 /* Unrecognized system call. Not good. */
