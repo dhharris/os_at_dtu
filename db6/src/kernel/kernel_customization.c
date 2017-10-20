@@ -132,6 +132,7 @@ void handle_system_call(void)
                         {
                                 current_thread->eax = ALL_OK;
                                 current_thread = yield();
+                                // TODO: Change process state?
                                 break;
                         }
                 default:
