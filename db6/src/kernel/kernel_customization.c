@@ -15,6 +15,24 @@
 #include "kernel.h"
 
 
+// Return the next available ready thread
+struct thread *yield()
+{
+        int i, index = current_thread - threads;
+
+        /* Search upper half of array */
+        for (i = index + 1; i < MAX_THREADS; ++i)
+                if (threads[i].process)
+                        return &threads[i];
+
+        /* Search lower half of array */
+        for (i = 0; i < index; ++i)
+                if (threads[i].process)
+                        return &threads[i];
+        return current_thread; // None found
+}
+
+
 // Terminate thread t. If t is an unused thread this syscall is a NOP
 void terminate(struct thread *t)
 {
@@ -95,7 +113,9 @@ void handle_system_call(void)
                                 struct thread *t = get_new_thread();
 
                                 if (t) {
-                                        t->eip = current_thread->edi;
+                                        int index = current_thread->edi;
+                                        t->eip =
+                                                executable_table[index];
                                         current_thread->eax =
                                                 assign_to_process(t);
                                 } else {
@@ -106,6 +126,12 @@ void handle_system_call(void)
                 case SYSCALL_TERMINATE:
                         {
                                 terminate(current_thread);
+                                break;
+                        }
+                case SYSCALL_YIELD:
+                        {
+                                current_thread->eax = ALL_OK;
+                                current_thread = yield();
                                 break;
                         }
                 default:
