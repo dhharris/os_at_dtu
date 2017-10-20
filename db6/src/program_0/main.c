@@ -19,6 +19,7 @@ main(int argc, char* argv[])
  {
   prints("Ping\n");
   yield();
+  break;
  }
 
  return 0;
