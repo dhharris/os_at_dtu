@@ -123,6 +123,18 @@ void handle_system_call(void)
                                 }
                                 break;
                         }
+                case SYSCALL_CREATETHREAD:
+                        {
+                                /* Set up new thread associated with the
+                                 * current thread's process
+                                 */
+                                struct thread *t = get_new_thread();
+                                t->process = current_thread->process;
+                                t->eip = executable_table[current_thread->edi];
+                                t->esp = current_thread->esi;
+                                current_thread->eax = ALL_OK;
+                                break;
+                        }
                 case SYSCALL_TERMINATE:
                         {
                                 terminate(current_thread);
