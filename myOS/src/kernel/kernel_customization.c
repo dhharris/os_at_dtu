@@ -87,6 +87,7 @@ void kernel_late_init(void)
            for you to do later. */
         threads[0].eip = executable_table[0];
         assign_to_process(&threads[0]);
+        threads[0].process->state = PROCESS_RUNNING;
 
         /* Go to user space. */
         go_to_user_space();
@@ -129,7 +130,12 @@ void handle_system_call(void)
                                  * current thread's process
                                  */
                                 struct thread *t = get_new_thread();
+                                if (!t) {
+                                        current_thread->eax = ERROR;
+                                        break;
+                                }
                                 t->process = current_thread->process;
+                                t->process->number_of_threads++;
                                 t->eip = current_thread->edi;
                                 t->esp = current_thread->esi;
                                 current_thread->eax = ALL_OK;
@@ -138,13 +144,18 @@ void handle_system_call(void)
                 case SYSCALL_TERMINATE:
                         {
                                 terminate(current_thread);
+                                current_thread = yield();
+                                current_thread->process->state =
+                                        PROCESS_RUNNING;
                                 break;
                         }
                 case SYSCALL_YIELD:
                         {
                                 current_thread->eax = ALL_OK;
+                                current_thread->process->state = PROCESS_READY;
                                 current_thread = yield();
-                                // TODO: Change process state?
+                                current_thread->process->state =
+                                        PROCESS_RUNNING;
                                 break;
                         }
                 default:
