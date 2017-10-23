@@ -130,7 +130,7 @@ void handle_system_call(void)
                                  */
                                 struct thread *t = get_new_thread();
                                 t->process = current_thread->process;
-                                t->eip = executable_table[current_thread->edi];
+                                t->eip = current_thread->edi;
                                 t->esp = current_thread->esi;
                                 current_thread->eax = ALL_OK;
                                 break;
