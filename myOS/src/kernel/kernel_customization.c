@@ -39,7 +39,7 @@ void terminate(struct thread *t)
         struct process *p = t->process;
         if (p) {
                 /* Terminate process if it has no more threads */
-                if (!--p->number_of_threads) {
+                if (!(--p->number_of_threads)) {
                         p->state = PROCESS_NEW;
                         p->number_of_threads = 0;
                 }
@@ -107,7 +107,12 @@ void handle_system_call(void)
                                 current_thread->eax = ALL_OK;
                                 break;
                         }
-
+                case SYSCALL_PRINTHEX:
+                        {
+                                kprinthex((int) current_thread->edi);
+                                current_thread->eax = ALL_OK;
+                                break;
+                        }
                 case SYSCALL_CREATEPROCESS:
                         {
                                 /* Find a new thread */
