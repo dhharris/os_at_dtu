@@ -175,7 +175,7 @@ createsemaphore(int32_t initial_count)
                 "1: \n\t"  :
                 "=a" (return_value) :
                 "a" (SYSCALL_CREATESEMAPHORE), "D" (initial_count) :
-                "cc", "%rcx", "%r11", "memory");
+                "cc", "%ecx", "%edx", "memory");
  return return_value;
 }
 
