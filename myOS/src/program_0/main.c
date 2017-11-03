@@ -15,6 +15,12 @@ void thread()
         }
 }
 
+void thread_undo()
+{
+        counter--;
+        terminate(); // Whoops, we only run this once!
+}
+
 char thread_stack[4096];
 
 static char *test_createprocess_should_return_ALL_OK()
@@ -38,7 +44,7 @@ static char *test_create_thread_should_return_ALL_OK()
         return 0;
 }
 
-static char *test_create_thread_should_increment_counter()
+static char *test_yield_should_add_to_counter_each_time()
 {
         int first = counter;
         yield(); // Context switch so the thread we created is ran
@@ -65,14 +71,27 @@ static char *test_terminate_should_not_print_pang()
         return 0;
 }
 
+static char *test_terminate_with_thread_should_increment_counter()
+{
+        int first = counter;
+        createthread(thread_undo, thread_stack + 4096);
+        yield(); // Context switch so the thread we created is ran
+        yield(); // Do it again
+        int second = counter;
+        // Now it should only be incremented by 1
+        mu_assert("Error, second != first + 1", second == first + 1);
+        return 0;
+}
+
 static char *all_tests()
 {
         mu_run_test(test_createprocess_should_return_ALL_OK);
         mu_run_test(test_createprocess_should_return_ERROR);
-        mu_run_test(test_yield_should_run_program_1);
-        mu_run_test(test_terminate_should_not_print_pang);
         mu_run_test(test_create_thread_should_return_ALL_OK);
-        mu_run_test(test_create_thread_should_increment_counter);
+        mu_run_test(test_yield_should_run_program_1);
+        mu_run_test(test_yield_should_add_to_counter_each_time);
+        mu_run_test(test_terminate_should_not_print_pang);
+        mu_run_test(test_terminate_with_thread_should_increment_counter);
         return 0;
 }
 
