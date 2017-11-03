@@ -24,6 +24,13 @@ static char *test_createprocess_should_return_ALL_OK()
         return 0;
 }
 
+static char *test_createprocess_should_return_ERROR()
+{
+        int result = createprocess(1000);
+        mu_assert("error, result != ERROR", result == ERROR);
+        return 0;
+}
+
 static char *test_createprocess_should_run_program_1()
 {
         // If program 1 is ran then "Pong" will be printed to the screen
@@ -36,6 +43,7 @@ static char *all_tests()
 {
         mu_run_test(test_createprocess_should_return_ALL_OK);
         mu_run_test(test_createprocess_should_run_program_1);
+        mu_run_test(test_createprocess_should_return_ERROR);
         prints("Verify that 'Pong' is printed above\n");
         return 0;
 }

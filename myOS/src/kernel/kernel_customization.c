@@ -68,6 +68,11 @@ int assign_to_process(struct thread *t)
         return ALL_OK;
 }
 
+int is_valid_exe(int index)
+{
+        return index >= 0 && index < EXECUTABLE_TABLE_SIZE;
+}
+
 
 // Finds an available thread that isn't being used
 // Returns 0 if not found
@@ -117,9 +122,9 @@ void handle_system_call(void)
                         {
                                 /* Find a new thread */
                                 struct thread *t = get_new_thread();
+                                int index = current_thread->edi;
 
-                                if (t) {
-                                        int index = current_thread->edi;
+                                if (t && is_valid_exe(index)) {
                                         t->eip =
                                                 executable_table[index];
                                         current_thread->eax =
