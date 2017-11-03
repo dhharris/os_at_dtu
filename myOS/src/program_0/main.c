@@ -36,8 +36,15 @@ static char *test_yield_should_run_program_1()
         // If program 1 is ran then "Pong" will be printed to the screen
         // if we perform a context switch
         yield();
-        prints("test_yield_should_run_program_1: Verify that 'Pong' is "
-                        "printed above\n");
+        prints("test_yield: Verify that 'Pong' is printed above\n");
+        return 0;
+}
+
+static char *test_terminate_should_not_print_pang()
+{
+        createprocess(2);
+        yield();
+        prints("test_terminate: Verify that program2 does not print 'Pang'\n");
         return 0;
 }
 
@@ -46,6 +53,7 @@ static char *all_tests()
         mu_run_test(test_createprocess_should_return_ALL_OK);
         mu_run_test(test_createprocess_should_return_ERROR);
         mu_run_test(test_yield_should_run_program_1);
+        mu_run_test(test_terminate_should_not_print_pang);
         return 0;
 }
 
