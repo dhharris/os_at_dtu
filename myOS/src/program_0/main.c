@@ -36,6 +36,7 @@ static char *all_tests()
 {
         mu_run_test(test_createprocess_should_return_ALL_OK);
         mu_run_test(test_createprocess_should_run_program_1);
+        prints("Verify that 'Pong' is printed above\n");
         return 0;
 }
 
