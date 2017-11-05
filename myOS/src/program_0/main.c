@@ -4,25 +4,24 @@
 #include <scwrapper.h>
 #include <minunit.h>
 
-#define COUNT 10000000
+#define COUNT 1000000
 
 volatile int counter;
 int tests_run = 0;
 int sum = 0; // Shared
 int mutex;
+int done = 0; // Number of threads that are finished
 
 void thread()
 {
-        while (1) {
-                counter++;
-                yield();
-        }
+        counter += 2;
+        terminate();
 }
 
 void thread_undo()
 {
         counter--;
-        terminate(); // Whoops, we only run this once!
+        terminate();
 }
 
 void countgold()
@@ -33,7 +32,11 @@ void countgold()
                 // Critical section
                 sum++;
                 semaphoreup(mutex);
+                yield();
         }
+        semaphoredown(mutex);
+        done++;
+        semaphoreup(mutex);
         terminate();
 }
 
@@ -60,16 +63,6 @@ static char *test_create_thread_should_return_ALL_OK()
         return 0;
 }
 
-static char *test_yield_should_add_to_counter_each_time()
-{
-        int first = counter;
-        yield(); // Context switch so the thread we created is ran
-        yield(); // Do it again
-        int second = counter;
-        mu_assert("Error, second != first + 2", second == first + 2);
-        return 0;
-}
-
 static char *test_yield_should_run_program_1()
 {
         // If program 1 is ran then "Pong" will be printed to the screen
@@ -87,24 +80,18 @@ static char *test_terminate_should_not_print_pang()
         return 0;
 }
 
-static char *test_terminate_with_thread_should_increment_counter()
-{
-        int first = counter;
-        createthread(thread_undo, thread_stack + 4096);
-        yield(); // Context switch so the thread we created is ran
-        yield(); // Do it again
-        int second = counter;
-        // Now it should only be incremented by 1
-        mu_assert("Error, second != first + 1", second == first + 1);
-        return 0;
-}
-
 static char *test_semaphores_should_perform_correct_increments()
 {
         mutex = createsemaphore(1);
-        createthread(countgold, thread_stack + 4096);
-        createthread(countgold, thread_stack + 4096);
-        yield();
+        createthread(countgold, 0);
+        createthread(countgold, 0);
+        int running = 1;
+        while (running) {
+                yield();
+                semaphoredown(mutex);
+                running = done < 2;
+                semaphoreup(mutex);
+        }
         mu_assert("Error, sum != COUNT * 2", sum == COUNT * 2);
         return 0;
 }
@@ -115,9 +102,7 @@ static char *all_tests()
         mu_run_test(test_createprocess_should_return_ERROR);
         mu_run_test(test_create_thread_should_return_ALL_OK);
         mu_run_test(test_yield_should_run_program_1);
-        mu_run_test(test_yield_should_add_to_counter_each_time);
         mu_run_test(test_terminate_should_not_print_pang);
-        mu_run_test(test_terminate_with_thread_should_increment_counter);
         mu_run_test(test_semaphores_should_perform_correct_increments);
         return 0;
 }
