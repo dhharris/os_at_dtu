@@ -32,6 +32,11 @@ struct thread *next_thread()
         return current_thread; // None found
 }
 
+void destroysemaphore(int index)
+{
+        semaphores[index].in_use = 0;
+}
+
 void yield()
 {
         current_thread->process->state = PROCESS_READY;
@@ -48,7 +53,12 @@ void terminate(struct thread *t)
                 /* Terminate process if it has no more threads */
                 if (!(--p->number_of_threads)) {
                         p->state = PROCESS_NEW;
-                        p->number_of_threads = 0;
+
+                        // Remove any semaphores the process is using
+                        int i;
+                        for (i = 0; i < MAX_SEMAPHORES; ++i)
+                                if (semaphores[i].owner == p)
+                                        destroysemaphore(i);
                 }
                 t->process = 0;
         }
@@ -106,11 +116,6 @@ int createsemaphore(int max)
                 }
         }
         return ERROR; // Free semaphore not found
-}
-
-void destroysemaphore(int index)
-{
-        semaphores[index].in_use = 0;
 }
 
 void semaphoreup(int index)
