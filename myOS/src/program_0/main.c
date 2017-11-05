@@ -4,8 +4,12 @@
 #include <scwrapper.h>
 #include <minunit.h>
 
+#define COUNT 10000000
+
 volatile int counter;
 int tests_run = 0;
+int sum = 0; // Shared
+int mutex;
 
 void thread()
 {
@@ -19,6 +23,18 @@ void thread_undo()
 {
         counter--;
         terminate(); // Whoops, we only run this once!
+}
+
+void countgold()
+{
+        int i; // local to each thread
+        for (i = 0; i < COUNT; ++i) {
+                semaphoredown(mutex);
+                // Critical section
+                sum++;
+                semaphoreup(mutex);
+        }
+        terminate();
 }
 
 char thread_stack[4096];
@@ -83,6 +99,16 @@ static char *test_terminate_with_thread_should_increment_counter()
         return 0;
 }
 
+static char *test_semaphores_should_perform_correct_increments()
+{
+        mutex = createsemaphore(1);
+        createthread(countgold, thread_stack + 4096);
+        createthread(countgold, thread_stack + 4096);
+        yield();
+        mu_assert("Error, sum != COUNT * 2", sum == COUNT * 2);
+        return 0;
+}
+
 static char *all_tests()
 {
         mu_run_test(test_createprocess_should_return_ALL_OK);
@@ -92,6 +118,7 @@ static char *all_tests()
         mu_run_test(test_yield_should_add_to_counter_each_time);
         mu_run_test(test_terminate_should_not_print_pang);
         mu_run_test(test_terminate_with_thread_should_increment_counter);
+        mu_run_test(test_semaphores_should_perform_correct_increments);
         return 0;
 }
 

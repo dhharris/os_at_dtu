@@ -54,7 +54,6 @@ struct process {
 struct semaphore {
         int in_use; // 1 if used, 0 otherwise
         struct process *owner; 
-
-        // Implementation from Modern Operating Systems, 4e
-        int count;
+        int max;
+        volatile int count;
 };

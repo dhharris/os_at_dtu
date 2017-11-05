@@ -16,7 +16,7 @@
 
 
 // Return the next available ready thread
-struct thread *yield()
+struct thread *next_thread()
 {
         int i, index = current_thread - threads;
 
@@ -30,6 +30,13 @@ struct thread *yield()
                 if (threads[i].process)
                         return &threads[i];
         return current_thread; // None found
+}
+
+void yield()
+{
+        current_thread->process->state = PROCESS_READY;
+        current_thread = next_thread();
+        current_thread->process->state = PROCESS_RUNNING;
 }
 
 
@@ -85,7 +92,7 @@ struct thread *get_new_thread()
         return 0;
 }
 
-int createsemaphore(int count)
+int createsemaphore(int max)
 {
         int i;
 
@@ -94,7 +101,7 @@ int createsemaphore(int count)
                         struct semaphore *sem = &semaphores[i];
                         sem->in_use = 1;
                         sem->owner = current_thread->process;
-                        sem->count = count;
+                        sem->count = sem->max = max;
                         return i;
                 }
         }
@@ -106,26 +113,34 @@ void destroysemaphore(int index)
         semaphores[index].in_use = 0;
 }
 
-int semaphoreup(int index)
+void semaphoreup(int index)
 {
         struct semaphore *sem = &semaphores[index];
 
         // Only threads of the owning process can use the semaphore
-        if (sem->owner != current_thread->process)
-                return ERROR;
-        sem->count++;
-        return ALL_OK;
+        if (sem->owner != current_thread->process) {
+                current_thread->eax = ERROR;
+        } else if (sem->count >= sem->max) {
+                yield(); // Block until we can increment
+        } else {
+                sem->count++;
+                current_thread->eax = ALL_OK;
+        }
 }
 
-int semaphoredown(int index)
+void semaphoredown(int index)
 {
         struct semaphore *sem = &semaphores[index];
 
         // Only threads of the owning process can use the semaphore
-        if (sem->owner != current_thread->process)
-                return ERROR;
-        sem->count--;
-        return ALL_OK;
+        if (sem->owner != current_thread->process) {
+                current_thread->eax = ERROR;
+        } else if (sem->count <= 0) {
+                yield(); // Block until we can decrement
+        } else {
+                sem->count--;
+                current_thread->eax = ALL_OK;
+        }
 }
 
 void kernel_late_init(void)
@@ -196,18 +211,13 @@ void handle_system_call(void)
                 case SYSCALL_TERMINATE:
                         {
                                 terminate(current_thread);
-                                current_thread = yield();
-                                current_thread->process->state =
-                                        PROCESS_RUNNING;
+                                yield();
                                 break;
                         }
                 case SYSCALL_YIELD:
                         {
+                                yield();
                                 current_thread->eax = ALL_OK;
-                                current_thread->process->state = PROCESS_READY;
-                                current_thread = yield();
-                                current_thread->process->state =
-                                        PROCESS_RUNNING;
                                 break;
                         }
                 case SYSCALL_CREATESEMAPHORE:
@@ -219,16 +229,12 @@ void handle_system_call(void)
                         }
                 case SYSCALL_SEMAPHOREUP:
                         {
-                                int handle = current_thread->edi;
-                                current_thread->eax =
-                                        semaphoreup(handle);
+                                semaphoreup(current_thread->edi);
                                 break;
                         }
                 case SYSCALL_SEMAPHOREDOWN:
                         {
-                                int handle = current_thread->edi;
-                                current_thread->eax =
-                                        semaphoredown(handle);
+                                semaphoredown(current_thread->edi);
                                 break;
                         }
                 default:
