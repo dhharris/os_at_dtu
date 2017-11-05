@@ -45,7 +45,7 @@ extern void kernel_init(register uint32_t* const multiboot_information)
  __attribute__ ((noreturn));
 
 /* These are declared in kernel.h */
-uintptr_t executable_table[EXECUTABLE_TABLE_SIZE] = 
+uintptr_t executable_table[EXECUTABLE_TABLE_SIZE] =
  {(uintptr_t)exec_0_start,
   (uintptr_t)exec_1_start,
   (uintptr_t)exec_2_start};
@@ -55,6 +55,8 @@ struct thread threads[MAX_THREADS];
 struct thread* current_thread = &threads[0];
 
 struct process processes[MAX_PROCESSES];
+
+struct semaphore semaphores[MAX_SEMAPHORES];
 
 /* Definitions. */
 

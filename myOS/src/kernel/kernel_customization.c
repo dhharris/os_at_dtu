@@ -85,6 +85,48 @@ struct thread *get_new_thread()
         return 0;
 }
 
+int createsemaphore(int count)
+{
+        int i;
+
+        for (i = 0; i < MAX_SEMAPHORES; ++i) {
+                if (!semaphores[i].in_use) {
+                        struct semaphore *sem = &semaphores[i];
+                        sem->in_use = 1;
+                        sem->owner = current_thread->process;
+                        sem->count = count;
+                        return i;
+                }
+        }
+        return ERROR; // Free semaphore not found
+}
+
+void destroysemaphore(int index)
+{
+        semaphores[index].in_use = 0;
+}
+
+int semaphoreup(int index)
+{
+        struct semaphore *sem = &semaphores[index];
+
+        // Only threads of the owning process can use the semaphore
+        if (sem->owner != current_thread->process)
+                return ERROR;
+        sem->count++;
+        return ALL_OK;
+}
+
+int semaphoredown(int index)
+{
+        struct semaphore *sem = &semaphores[index];
+
+        // Only threads of the owning process can use the semaphore
+        if (sem->owner != current_thread->process)
+                return ERROR;
+        sem->count--;
+        return ALL_OK;
+}
 
 void kernel_late_init(void)
 {
@@ -166,6 +208,27 @@ void handle_system_call(void)
                                 current_thread = yield();
                                 current_thread->process->state =
                                         PROCESS_RUNNING;
+                                break;
+                        }
+                case SYSCALL_CREATESEMAPHORE:
+                        {
+                                int count = current_thread->edi;
+                                current_thread->eax =
+                                        createsemaphore(count);
+                                break;
+                        }
+                case SYSCALL_SEMAPHOREUP:
+                        {
+                                int handle = current_thread->edi;
+                                current_thread->eax =
+                                        semaphoreup(handle);
+                                break;
+                        }
+                case SYSCALL_SEMAPHOREDOWN:
+                        {
+                                int handle = current_thread->edi;
+                                current_thread->eax =
+                                        semaphoredown(handle);
                                 break;
                         }
                 default:

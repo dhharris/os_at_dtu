@@ -47,6 +47,9 @@ uintptr_t executable_table[EXECUTABLE_TABLE_SIZE];
 /*! Maximum number of processes in the system. */
 #define MAX_PROCESSES 16
 
+/*! Maximum number of semaphores in the system */
+#define MAX_SEMAPHORES 256
+
 /*! Finalizes initialization of the kernel. */
 extern void kernel_late_init(void)
  __attribute__ ((noreturn));
@@ -64,4 +67,7 @@ extern struct thread* current_thread;
 
 /*! All processes in the system. */
 extern struct process processes[MAX_PROCESSES];
+
+/*! All semaphores in the system */
+extern struct semaphore semaphores[MAX_SEMAPHORES];
 #endif
