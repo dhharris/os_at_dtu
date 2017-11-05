@@ -40,8 +40,6 @@ void countgold()
         terminate();
 }
 
-char thread_stack[4096];
-
 static char *test_createprocess_should_return_ALL_OK()
 {
         int result = createprocess(1);
@@ -58,7 +56,7 @@ static char *test_createprocess_should_return_ERROR()
 
 static char *test_create_thread_should_return_ALL_OK()
 {
-        int result = createthread(thread, thread_stack + 4096);
+        int result = createthread(thread, 0);
         mu_assert("Error, result != ALL_OK", result == ALL_OK);
         return 0;
 }
@@ -80,9 +78,15 @@ static char *test_terminate_should_not_print_pang()
         return 0;
 }
 
+static char *test_semaphores_should_return_correct_handle()
+{
+        mutex = createsemaphore(1); // First semaphore created will be index 0
+        mu_assert("Error, mutex != 0", mutex == 0);
+        return 0;
+}
+
 static char *test_semaphores_should_perform_correct_increments()
 {
-        mutex = createsemaphore(1);
         createthread(countgold, 0);
         createthread(countgold, 0);
         int running = 1;
@@ -96,6 +100,13 @@ static char *test_semaphores_should_perform_correct_increments()
         return 0;
 }
 
+static char *test_semaphores_should_return_error()
+{
+        int result = semaphoreup(10);
+        mu_assert("Error, result != ERROR", result == ERROR);
+        return 0;
+}
+
 static char *all_tests()
 {
         mu_run_test(test_createprocess_should_return_ALL_OK);
@@ -103,7 +114,9 @@ static char *all_tests()
         mu_run_test(test_create_thread_should_return_ALL_OK);
         mu_run_test(test_yield_should_run_program_1);
         mu_run_test(test_terminate_should_not_print_pang);
+        mu_run_test(test_semaphores_should_return_correct_handle);
         mu_run_test(test_semaphores_should_perform_correct_increments);
+        mu_run_test(test_semaphores_should_return_error);
         return 0;
 }
 
