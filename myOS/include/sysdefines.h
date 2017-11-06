@@ -60,7 +60,7 @@
     the esp register of the new thread is passed in esi. The other registers
     are undefinied.
 
-    The system call returns in rax ALL_OK if successful or an error code if 
+    The system call returns in eax ALL_OK if successful or an error code if 
     unsuccessful.
    */
 #define SYSCALL_CREATETHREAD    (16)
@@ -69,13 +69,13 @@
     semaphore in the eax register. The initial value of the semaphore count
     value is passed in the edi register.
    
-    If unsuccessful the system call returns an error code in rax. */
+    If unsuccessful the system call returns an error code in eax. */
 #define SYSCALL_CREATESEMAPHORE (17)
 
 /*! Performs a semaphore down operation. The handle of the semaphore is passed
     in the edi register.
 
-    The system call returns in rax ALL_OK if successful or an error code if 
+    The system call returns in eax ALL_OK if successful or an error code if 
     unsuccessful.
    */
 #define SYSCALL_SEMAPHOREDOWN   (18)
@@ -83,7 +83,7 @@
 /*! Performs an semaphore up operation. The handle of the semaphore is passed
     in the edi register.
 
-    The system call returns in rax ALL_OK if successful or an error code if 
+    The system call returns in eax ALL_OK if successful or an error code if 
     unsuccessful.
    */
 #define SYSCALL_SEMAPHOREUP     (19)

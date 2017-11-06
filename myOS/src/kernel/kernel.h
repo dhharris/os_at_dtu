@@ -70,4 +70,25 @@ extern struct process processes[MAX_PROCESSES];
 
 /*! All semaphores in the system */
 extern struct semaphore semaphores[MAX_SEMAPHORES];
+
+/*! The maximum number of page frames the system can support. */
+#define MAX_NUMBER_OF_FRAMES    (32*1024*1024/(4*1024))
+
+/*! Defines a page frame. */
+struct page_frame
+{
+ struct process* owner; /*!< The owning process of this page frame. */
+ int             start; /*!< Index into the page frame table. The index
+                             corresponds to the start of the reserved
+                             memory block. */
+ int             free_is_allowed; /*!< Flag that is zero if the page
+                                       must not be allocated or
+                                       de-allocated with free. */
+};
+
+/*! Array holding information on all the page frames in physical memory. */
+extern struct page_frame page_frame_table[MAX_NUMBER_OF_FRAMES];
+
+/*! Size, in pages, of the memory. */
+extern unsigned long memory_pages;
 #endif

@@ -120,7 +120,83 @@ static char *all_tests()
         return 0;
 }
 
-int main(int argc, char* argv[])
+/* Generates a pseduo random number */
+static inline unsigned long rnd(void)
+{
+        const unsigned long seed = 101;
+        static unsigned long memory;
+
+        if ((memory == 0) || (memory == 1) || (memory == -1)) {
+                memory = seed;
+        }
+
+        memory = (9973 * (~memory)) + ((memory) % 701);
+        return memory;
+}
+
+static char *test_alloc_with_random_blocks()
+{
+        struct {
+                unsigned long addr;
+                unsigned long size;
+        } blocks[16];
+        register int clock;
+        register long total_memory_size = 0;
+
+        /* Reset the information on the blocks */
+        for (clock = 0; clock < 16; clock++) {
+                blocks[clock].addr = 0;
+        }
+
+        clock = 0;
+
+        while (1) {
+                long addr;
+
+                /* randomize the size of a block. */
+                blocks[clock].size = (24 * 1024 * 1024 - total_memory_size) *
+                                     (rnd() & (256 * 256 - 1)) /
+                                     (256 * 256 * 8);
+
+                /* Sanity check the block size. */
+                if ((blocks[clock].size > 0) &&
+                    (blocks[clock].size < (24 * 1024 * 1024))) {
+                        /* Try to allocate memory. */
+                        addr = (unsigned long)alloc(blocks[clock].size);
+
+                        /* Check if it was successful. */
+                        if (addr <= 0) {
+                                prints("Memory block allocate failed!\n");
+                                break;
+                        }
+
+                        prints(".");
+
+                        /* Keep track of how much memory we have allocated... */
+                        total_memory_size += blocks[clock].size;
+                        /* and the address. */
+                        blocks[clock].addr = addr;
+                } else {
+                        blocks[clock].addr = 0;
+                }
+
+                clock = (clock + 1) & 15;
+
+                /* Try to free one block. */
+                if (0 != blocks[clock].addr) {
+                        if (0 != free((void *)blocks[clock].addr)) {
+                                prints("Memory block free failed!\n");
+                                break;
+                        }
+                        prints("*");
+                        total_memory_size -= blocks[clock].size;
+                }
+        }
+
+        return 0;
+}
+
+int main(int argc, char *argv[])
 {
         char *result = all_tests();
         if (result != 0) {
@@ -133,5 +209,6 @@ int main(int argc, char* argv[])
         printhex(tests_run);
         prints("\n");
 
-        while (1);
+        while (1)
+                ;
 }

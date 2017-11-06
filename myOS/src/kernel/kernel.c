@@ -45,7 +45,7 @@ extern void kernel_init(register uint32_t* const multiboot_information)
  __attribute__ ((noreturn));
 
 /* These are declared in kernel.h */
-uintptr_t executable_table[EXECUTABLE_TABLE_SIZE] =
+uintptr_t executable_table[EXECUTABLE_TABLE_SIZE] = 
  {(uintptr_t)exec_0_start,
   (uintptr_t)exec_1_start,
   (uintptr_t)exec_2_start};
@@ -56,7 +56,9 @@ struct thread* current_thread = &threads[0];
 
 struct process processes[MAX_PROCESSES];
 
-struct semaphore semaphores[MAX_SEMAPHORES];
+struct page_frame page_frame_table[MAX_NUMBER_OF_FRAMES];
+
+unsigned long memory_pages;
 
 /* Definitions. */
 
@@ -129,6 +131,44 @@ void kernel_init(register uint32_t* const multiboot_information
  wrmsr(0x175, (uintptr_t)kernel_stack - 4, 0);
  /* The entry point for sysenter. We will end up there at system calls. */
  wrmsr(0x176, (uintptr_t)sysenter_entry_point, 0);
+
+ /* Calculate the number of pages. */
+
+ /* Extract information on how much memory is available in the machine. */
+ memory_pages =  ((uintptr_t)(*(multiboot_information+2) + 1024)) / 4;
+
+ if (memory_pages > MAX_NUMBER_OF_FRAMES)
+  memory_pages = MAX_NUMBER_OF_FRAMES;
+
+ {
+  /* Calculate the number of frames occupied by the kernel and executable 
+     images. */
+  const register int k=((uintptr_t) end_of_applications)/(4*1024);
+  register int i;
+
+  /* Mark the pages that are used by the kernel or executable images as taken
+    by the kernel (1 in the owner field). */
+  for(i=0; i<k; i++)
+  {
+   page_frame_table[i].owner=(struct process*) 1;
+   page_frame_table[i].free_is_allowed=0;
+  }
+
+  /* Loop over all the rest page frames and mark them as free (0 in owner
+     field). */
+  for(i=k; i<memory_pages; i++)
+  {
+   page_frame_table[i].owner=(struct process*) 0;
+   page_frame_table[i].free_is_allowed=1;
+  }
+
+  /* Mark any unusable pages as taken by the kernel. */
+  for(i=memory_pages; i<MAX_NUMBER_OF_FRAMES; i++)
+  {
+   page_frame_table[i].owner=(struct process*) 1;
+   page_frame_table[i].free_is_allowed=0;
+  }
+ }
 
  kprints("The kernel has booted!\n");
 
