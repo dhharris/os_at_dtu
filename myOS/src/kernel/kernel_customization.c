@@ -148,6 +148,54 @@ void semaphoredown(int index)
         }
 }
 
+void *malloc(uint32_t nbytes)
+{
+        uint32_t npages = (nbytes + 4095) >> 12;
+
+        /* Find first available memory block */
+        uint32_t start, end;
+        start = end = 0;
+
+        for (start = 0; start + npages < MAX_NUMBER_OF_FRAMES; ++start) {
+                for (end = start; end < start + npages; ++end)
+                        if (page_frame_table[end].owner)
+                                break; // Not available
+                if (end == start + npages)
+                        break; // We found a valid block
+                else
+                        start = end + 1;
+        }
+        if (start + npages >= MAX_NUMBER_OF_FRAMES)
+                return 0;
+
+        /* Set memory metadata */
+        uint32_t i;
+
+        for (i = start; i < end; ++i) {
+                page_frame_table[i].owner = current_thread->process;
+                page_frame_table[i].start = start;
+                page_frame_table[i].free_is_allowed = 1;
+        }
+
+        return (void*)&page_frame_table[start];
+}
+
+void free(void *p)
+{
+        if (!p)
+                return;
+        int start = ((struct page_frame*)p)->start;
+        int i;
+        for (i = start; i < MAX_NUMBER_OF_FRAMES; ++i) {
+                if (page_frame_table[i].owner == current_thread->process
+                                && page_frame_table[i].start == start
+                                && page_frame_table[i].free_is_allowed)
+                        page_frame_table[i].owner = 0;
+                else
+                        break; // Past end of memory or invalid address
+        }
+}
+
 void kernel_late_init(void)
 {
         /* Set up the first thread. For now we do not set up a process. That is
@@ -240,6 +288,19 @@ void handle_system_call(void)
                 case SYSCALL_SEMAPHOREDOWN:
                         {
                                 semaphoredown(current_thread->edi);
+                                break;
+                        }
+                case SYSCALL_ALLOCATE:
+                        {
+                                int nbytes = current_thread->edi;
+                                current_thread->eax = (uint32_t)malloc(nbytes);
+                                break;
+                        }
+                case SYSCALL_FREE:
+                        {
+                                free((void*)current_thread->edi);
+                                // Invalid free is a no-op, so always ALL_OK
+                                current_thread->eax = ALL_OK;
                                 break;
                         }
                 default:

@@ -129,6 +129,8 @@ static char *test_alloc_with_random_blocks()
         } blocks[16];
         register int clock;
         register long total_memory_size = 0;
+        register long nallocs = 0;
+        register long nfrees = 0;
 
         /* Reset the information on the blocks */
         for (clock = 0; clock < 16; clock++) {
@@ -137,8 +139,10 @@ static char *test_alloc_with_random_blocks()
 
         clock = 0;
 
+        prints("test_memory_alloc: ");
+
         int i;
-        for (i = 0; i < 5; ++i) {
+        for (i = 0; i < 10000000; ++i) {
                 long addr;
 
                 /* randomize the size of a block. */
@@ -153,12 +157,8 @@ static char *test_alloc_with_random_blocks()
                         addr = (unsigned long)alloc(blocks[clock].size);
 
                         /* Check if it was successful. */
-                        if (addr <= 0) {
-                                prints("Memory block allocate failed!\n");
-                                break;
-                        }
-
-                        prints(".");
+                        mu_assert("Memory block allocate failed!", addr > 0);
+                        nallocs++;
 
                         /* Keep track of how much memory we have allocated... */
                         total_memory_size += blocks[clock].size;
@@ -176,11 +176,26 @@ static char *test_alloc_with_random_blocks()
                                 prints("Memory block free failed!\n");
                                 break;
                         }
-                        prints("*");
+                        nfrees++;
                         total_memory_size -= blocks[clock].size;
                 }
         }
+        prints("Success\n");
+        prints("Total memory size: ");
+        printhex(total_memory_size);
+        prints("\nTotal allocs: ");
+        printhex(nallocs);
+        prints("\nTotal frees: ");
+        printhex(nfrees);
+        prints("\n");
 
+        return 0;
+}
+
+static char *test_alloc_with_large_block_should_fail()
+{
+        uint32_t too_big = 330000000; // Attempt to alloc 33 mb
+        mu_assert("Error, alloc result is non-zero", alloc(too_big) == 0);
         return 0;
 }
 
@@ -194,6 +209,7 @@ static char *all_tests()
         mu_run_test(test_semaphores_should_return_correct_handle);
         mu_run_test(test_semaphores_should_perform_correct_increments);
         mu_run_test(test_semaphores_should_return_error);
+        mu_run_test(test_alloc_with_large_block_should_fail);
         mu_run_test(test_alloc_with_random_blocks);
         return 0;
 }
