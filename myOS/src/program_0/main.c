@@ -199,6 +199,26 @@ static char *test_alloc_with_large_block_should_fail()
         return 0;
 }
 
+static char *test_free_should_return_ALL_OK()
+{
+        void *p = alloc(10000);
+        int result = free(p);
+        mu_assert("Error, result != ALL_OK", result == ALL_OK);
+        return 0;
+}
+
+static char *test_free_should_clear_metadata()
+{
+        struct page_frame {
+                void *owner;
+                int start, can_be_freed;
+        };
+        struct page_frame *p = alloc(1000);
+        free(p);
+        mu_assert("Error, metadata not cleared", (p + 1000)->owner == 0);
+        return 0;
+}
+
 static char *all_tests()
 {
         mu_run_test(test_createprocess_should_return_ALL_OK);
@@ -211,6 +231,8 @@ static char *all_tests()
         mu_run_test(test_semaphores_should_return_error);
         mu_run_test(test_alloc_with_large_block_should_fail);
         mu_run_test(test_alloc_with_random_blocks);
+        mu_run_test(test_free_should_return_ALL_OK);
+        mu_run_test(test_free_should_clear_metadata);
         return 0;
 }
 
