@@ -40,6 +40,20 @@ void countgold()
         terminate();
 }
 
+/* Generates a pseduo random number */
+static inline unsigned long rnd(void)
+{
+        const unsigned long seed = 101;
+        static unsigned long memory;
+
+        if ((memory == 0) || (memory == 1) || (memory == -1)) {
+                memory = seed;
+        }
+
+        memory = (9973 * (~memory)) + ((memory) % 701);
+        return memory;
+}
+
 static char *test_createprocess_should_return_ALL_OK()
 {
         int result = createprocess(1);
@@ -107,33 +121,6 @@ static char *test_semaphores_should_return_error()
         return 0;
 }
 
-static char *all_tests()
-{
-        mu_run_test(test_createprocess_should_return_ALL_OK);
-        mu_run_test(test_createprocess_should_return_ERROR);
-        mu_run_test(test_create_thread_should_return_ALL_OK);
-        mu_run_test(test_yield_should_run_program_1);
-        mu_run_test(test_terminate_should_not_print_pang);
-        mu_run_test(test_semaphores_should_return_correct_handle);
-        mu_run_test(test_semaphores_should_perform_correct_increments);
-        mu_run_test(test_semaphores_should_return_error);
-        return 0;
-}
-
-/* Generates a pseduo random number */
-static inline unsigned long rnd(void)
-{
-        const unsigned long seed = 101;
-        static unsigned long memory;
-
-        if ((memory == 0) || (memory == 1) || (memory == -1)) {
-                memory = seed;
-        }
-
-        memory = (9973 * (~memory)) + ((memory) % 701);
-        return memory;
-}
-
 static char *test_alloc_with_random_blocks()
 {
         struct {
@@ -150,7 +137,8 @@ static char *test_alloc_with_random_blocks()
 
         clock = 0;
 
-        while (1) {
+        int i;
+        for (i = 0; i < 5; ++i) {
                 long addr;
 
                 /* randomize the size of a block. */
@@ -193,6 +181,20 @@ static char *test_alloc_with_random_blocks()
                 }
         }
 
+        return 0;
+}
+
+static char *all_tests()
+{
+        mu_run_test(test_createprocess_should_return_ALL_OK);
+        mu_run_test(test_createprocess_should_return_ERROR);
+        mu_run_test(test_create_thread_should_return_ALL_OK);
+        mu_run_test(test_yield_should_run_program_1);
+        mu_run_test(test_terminate_should_not_print_pang);
+        mu_run_test(test_semaphores_should_return_correct_handle);
+        mu_run_test(test_semaphores_should_perform_correct_increments);
+        mu_run_test(test_semaphores_should_return_error);
+        mu_run_test(test_alloc_with_random_blocks);
         return 0;
 }
 
