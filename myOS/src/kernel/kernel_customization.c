@@ -231,6 +231,11 @@ void handle_system_call(void)
                                 current_thread->eax = 0x00010000;
                                 break;
                         }
+                case SYSCALL_MEMORY_PAGES_USED:
+                        {
+                                current_thread->eax = memory_pages_used;
+                                break;
+                        }
                 case SYSCALL_PRINTS:
                         {
                                 kprints((char *) current_thread->edi);

@@ -88,4 +88,8 @@
    */
 #define SYSCALL_SEMAPHOREUP     (19)
 
+/*! Returns the number of memory pages used in user space in register eax
+ */
+#define SYSCALL_MEMORY_PAGES_USED (72)
+
 #endif

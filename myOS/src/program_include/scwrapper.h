@@ -104,6 +104,22 @@ free(void * address)
  return return_value;
 }
 
+/*! Wrapper for the system call that returns the number of memory pages used. */
+static inline int32_t
+memory_pages_used(void)
+{
+ int32_t return_value;
+
+ __asm volatile("mov $1f, %%edx \n\t" 
+                "mov %%esp, %%ecx   \n\t" 
+                "sysenter         \n\t"
+                 "1: \n\t" :
+                 "=a" (return_value) :
+                 "a" (SYSCALL_MEMORY_PAGES_USED) :
+                 "cc", "%ecx", "%edx");
+ return return_value;
+}
+
 /*! Wrapper for the system call that terminates threads and processes. */
 static inline void
 terminate(void)

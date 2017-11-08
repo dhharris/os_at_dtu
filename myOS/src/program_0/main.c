@@ -92,6 +92,15 @@ static char *test_terminate_should_not_print_pang()
         return 0;
 }
 
+static char *test_terminate_should_free_memory_on_process_termination()
+{
+        unsigned long before = memory_pages_used();
+        createprocess(2);
+        yield();
+        mu_assert("Error, some pages were not freed", before == memory_pages_used());
+        return 0;
+}
+
 static char *test_semaphores_should_return_correct_handle()
 {
         mutex = createsemaphore(1); // First semaphore created will be index 0
@@ -219,6 +228,15 @@ static char *test_free_should_clear_metadata()
         return 0;
 }
 
+static char *test_free_should_free_all_pages_in_block()
+{
+        unsigned long before = memory_pages_used();
+        void *p = alloc(10000);
+        free(p);
+        mu_assert("Error, some pages were not freed", before == memory_pages_used());
+        return 0;
+}
+
 static char *all_tests()
 {
         mu_run_test(test_createprocess_should_return_ALL_OK);
@@ -226,6 +244,7 @@ static char *all_tests()
         mu_run_test(test_create_thread_should_return_ALL_OK);
         mu_run_test(test_yield_should_run_program_1);
         mu_run_test(test_terminate_should_not_print_pang);
+        mu_run_test(test_terminate_should_free_memory_on_process_termination);
         mu_run_test(test_semaphores_should_return_correct_handle);
         mu_run_test(test_semaphores_should_perform_correct_increments);
         mu_run_test(test_semaphores_should_return_error);
@@ -233,6 +252,7 @@ static char *all_tests()
         mu_run_test(test_alloc_with_random_blocks);
         mu_run_test(test_free_should_return_ALL_OK);
         mu_run_test(test_free_should_clear_metadata);
+        mu_run_test(test_free_should_free_all_pages_in_block);
         return 0;
 }
 
