@@ -14,6 +14,7 @@
 
 #include "kernel.h"
 
+unsigned long memory_pages_used;
 
 // Return the next available ready thread
 struct thread *next_thread()
@@ -30,6 +31,16 @@ struct thread *next_thread()
                 if (threads[i].process)
                         return &threads[i];
         return current_thread; // None found
+}
+
+/* Free the page frame at index if this process is allowed to do so */
+void free_page_frame(int index)
+{
+        if (page_frame_table[index].owner == current_thread->process
+                        && page_frame_table[index].free_is_allowed) {
+                page_frame_table[index].owner = 0;
+                memory_pages_used -= 1;
+        }
 }
 
 void destroysemaphore(int index)
@@ -49,16 +60,20 @@ void yield()
 void terminate(struct thread *t)
 {
         struct process *p = t->process;
+        int i;
+
         if (p) {
                 /* Terminate process if it has no more threads */
                 if (!(--p->number_of_threads)) {
                         p->state = PROCESS_NEW;
 
                         // Remove any semaphores the process is using
-                        int i;
                         for (i = 0; i < MAX_SEMAPHORES; ++i)
                                 if (semaphores[i].owner == p)
                                         destroysemaphore(i);
+                        // Free up memory used by the process
+                        for (i = 0; i < MAX_NUMBER_OF_FRAMES; ++i)
+                                free_page_frame(i); // only will free if owned
                 }
                 t->process = 0;
         }
@@ -176,9 +191,11 @@ void *malloc(uint32_t nbytes)
                 page_frame_table[i].start = start;
                 page_frame_table[i].free_is_allowed = 1;
         }
+        memory_pages_used += npages;
 
         return (void*)&page_frame_table[start];
 }
+
 
 void free(void *p)
 {
@@ -187,10 +204,8 @@ void free(void *p)
         int start = ((struct page_frame*)p)->start;
         int i;
         for (i = start; i < MAX_NUMBER_OF_FRAMES; ++i) {
-                if (page_frame_table[i].owner == current_thread->process
-                                && page_frame_table[i].start == start
-                                && page_frame_table[i].free_is_allowed)
-                        page_frame_table[i].owner = 0;
+                if (page_frame_table[i].start == start)
+                        free_page_frame(i);
                 else
                         break; // Past end of memory or invalid address
         }
