@@ -13,6 +13,8 @@
 #ifndef _SYSDEFINES_H_
 #define _SYSDEFINES_H_
 
+#include "stdint.h"
+
 /* Constant declarations. */
 
 /*! Return code when system call returns normally. */
