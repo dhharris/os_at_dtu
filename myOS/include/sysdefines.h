@@ -92,4 +92,49 @@
  */
 #define SYSCALL_MEMORY_PAGES_USED (72)
 
+/*! System call that allocates a port. The identity number of the port
+    is passed in edi. The system call returns, in eax, a handle to the
+    port or an error code if unsuccessful.
+ */
+#define SYSCALL_ALLOCATEPORT    (20)
+
+/*! System call that finds a port. The identity number of the port is
+    passed in edi. The owning process identity is passed in esi. The
+    system call returns, in eax, a handle to the port or an error code
+    if unsuccessful.
+ */
+#define SYSCALL_FINDPORT        (21)
+
+/*! System call that sends a message. The handle of the destination
+    port is passed in edi. A pointer to the message is passed in
+    esi. The system call returns, in eax, ALL_OK if successful or an
+    error code if unsuccessful.
+   */
+#define SYSCALL_SEND            (22)
+
+/*! System call that receives a message. The handle of the port on
+    which to receive is passed in edi. Register esi holds a pointer to
+    a buffer that will hold the received message.
+
+    The system call returns, in eax, ALL_OK if successful or an error
+    code if unsuccessful. Register edi holds the identity of process
+    from which the message was received.
+   */
+#define SYSCALL_RECEIVE         (23)
+
+/* Type declarations. */
+
+/*! Describes a message. */
+struct message
+{
+ int32_t int_0;
+ int32_t int_1;
+ int32_t int_2;
+ int32_t int_3;
+ int32_t int_4;
+ int32_t int_5;
+ int32_t int_6;
+ int32_t int_7;
+};
+
 #endif

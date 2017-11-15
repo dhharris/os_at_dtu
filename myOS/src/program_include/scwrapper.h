@@ -227,4 +227,67 @@ semaphoreup(int32_t semaphore_handle)
  return return_value;
 }
 
+/*! Wrapper for the system call that allocates a port. */
+static inline int32_t
+allocateport(int32_t id)
+{
+ int32_t return_value;
+ __asm volatile("mov $1f, %%edx \n\t" 
+                "mov %%esp, %%ecx   \n\t" 
+                "sysenter         \n\t" 
+                "1: \n\t" :
+                "=a" (return_value) :
+                "a" (SYSCALL_ALLOCATEPORT), "D" (id) :
+                "cc", "%ecx", "%edx", "memory");
+ return return_value;
+}
+
+/*! Wrapper for the system call that finds a port given an owning process and
+    port identity. */
+static inline int32_t
+findport(int32_t id, int32_t process)
+{
+ int32_t return_value;
+ __asm volatile("mov $1f, %%edx \n\t" 
+                "mov %%esp, %%ecx   \n\t" 
+                "sysenter         \n\t" 
+                "1: \n\t" :
+                "=a" (return_value) :
+                "a" (SYSCALL_FINDPORT), "D" (id), "S" (process) :
+                "cc", "%ecx", "%edx", "memory");
+ return return_value;
+}
+
+/*! Wrapper for the system call that sends a message to a port. */
+static inline int32_t
+send(int32_t port, const struct message* const message)
+{
+ int32_t return_value;
+ __asm volatile("mov $1f, %%edx \n\t" 
+                "mov %%esp, %%ecx   \n\t" 
+                "sysenter         \n\t" 
+                "1: \n\t" :
+                "=a" (return_value) :
+                "a" (SYSCALL_SEND), "D" (port), "S" (message) :
+                "cc", "%ecx", "%edx", "memory");
+ return return_value;
+}
+
+/*! Wrapper for the system call that receives a message from a port. */
+static inline int32_t
+receive(int32_t               port, 
+        struct message* const message,
+        int32_t* const        sender)
+{
+ int32_t return_value;
+ __asm volatile("mov $1f, %%edx \n\t" 
+                "mov %%esp, %%ecx   \n\t" 
+                "sysenter         \n\t" 
+                "1: \n\t" :
+                "=a" (return_value), "=D" (*sender) :
+                "a" (SYSCALL_RECEIVE), "D" (port), "S" (message):
+                "cc", "%ecx", "%edx", "memory");
+ return return_value;
+}
+
 #endif /* _SCWRAPPER_H_ */
